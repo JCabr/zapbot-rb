@@ -1,0 +1,44 @@
+Metrics:
+  Enabled: False
+
+Style/NumericLiterals:
+  Enabled: false
+
+Layout/IndentationWidth:
+  Width: 4
+
+Layout/IndentHash:
+  Enabled: false
+
+Layout/ClosingHeredocIndentation:
+  Enabled: false
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: false
+
+Layout/SpaceInsideStringInterpolation:
+  Enabled: false
+
+Style/SymbolProc:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/NestedParenthesizedCalls:
+  Enabled: false
+
+Style/PercentStringArray:
+  Enabled: false
+
+Style/UnneededCapitalW:
+  Enabled: false
+
+Security/Eval:
+  Enabled: false
+
+Lint/UselessAssignment:
+  Enabled: false
+
+AllCops:
+  TargetRubyVersion: 2.4

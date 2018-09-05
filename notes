@@ -1,0 +1,63 @@
+
+IF THINGS LIKE GETTING MEMBER COLORS DOES NOT WORK THEN INSTALLING DISCORDRB
+MANUALLY CAN SOLVE THE PROBLEM.
+STEPS:
+1) Either clone the github repo or get a zip of it
+2) Install the webhooks gem by doing:
+        - 'gem build discordrb-webhooks.gemspec'
+        - 'gem install discordrb-webhooks-(version).gem'
+3) Install discordrb by doing:
+        - 'gem build discordrb.gemspec'
+        - 'gem install discordrb-(version).gem'
+
+AFTER THESE STEPS THE LATEST (AND PROPERLY FUNCTIONING) VERSION OF
+DISCORDRB SHOULD BE INSTALLED AND EVERYTHING SHOULD WORK FINE.
+
+
+Restructure CommandContainer class so that a ZapBot is no longer extends
+from a CommandContainer, and instead just has methods that grab the commands
+from a command container.
+
+The ZapBot will use a ZapBotMainCommandList class to hold the overall command
+structure, and the actual CommandContainers (the modules the actual commands
+are written in that extend CommandContainer) will just use a simpler structure
+where all commands are added to, and stored in, a more basic command list
+class.
+The CommandContainers should use a simpler command list structure as they
+will have a lot less dynamic action happening, as they are moreso just a simple
+kind of storage for the initial commands that get loaded into a bot.
+
+The ZapBot's command list class will be more secure and thorough in how it
+handles things, as it's more possible for commands to changed.
+-------------------------------------------------------------------------------
+The ZapBotMainCommandList should have a structure that's roughly like:
+
+ZapBot::CommandList
+        |
+        ├---used by----> ZapBotCog --┐
+        |                            |
+        |                            └---grouped in---> ZapBotMainCommandList
+        |                                                       ^
+        |                                                       |
+        └-----holds list of all commands in---------------------┘
+
+
+CommandContainers should, instead of including ability to get commands from
+other containers (maybe add this feature just in case someone wants it), the
+containers just give the ability to make commands and also act as a storage
+for commands.
+-------------------------------------------------------------------------------
+With this change in organization, the commands and cogs in a ZapBot should be
+much simpler to manage and understand.
+
+Aliases will still essentially be a copy of the command they alias from with
+a flag denoting their status, but some additional functions for the command
+class (and storage classes) should make them reasonable to work with.
+
+After restructuring command storage, the main command list for the ZapBot
+should also have some convenience methods to be used for help commands, such
+as getting the help text for all commands in a command group (such as a cog
+or all commands) and putting them in a list (which can then be looked through
+if wanted, or joined together with the result being the bulk of the help
+command text).
+-------------------------------------------------------------------------------
