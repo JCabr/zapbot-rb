@@ -4,6 +4,12 @@ Metrics:
 Style/NumericLiterals:
   Enabled: false
 
+Style/MethodCallWithoutArgsParentheses:
+  Enabled: false
+
+Style/LambdaCall:
+  Enabled: false
+
 Layout/IndentationWidth:
   Width: 4
 
@@ -31,6 +37,9 @@ Style/NestedParenthesizedCalls:
 Style/PercentStringArray:
   Enabled: false
 
+Style/RedundantReturn:
+  Enabled: false
+
 Style/UnneededCapitalW:
   Enabled: false
 
@@ -38,6 +47,9 @@ Security/Eval:
   Enabled: false
 
 Lint/UselessAssignment:
+  Enabled: false
+
+Naming/PredicateName:
   Enabled: false
 
 AllCops:

@@ -9,6 +9,7 @@ require_relative 'cmd_container.rb'
 require_relative 'cmd_list.rb'
 require_relative 'main_cmd_list.rb'
 require_relative 'bot_utils.rb'
+require_relative 'menu.rb'
 
 # TODO: Redo command executing algorithm to work with command parser changes,
 #       allow multiple command runs, and other special things.
@@ -194,17 +195,22 @@ module ZapBot
                                     command_result[:desc] = current_desc
                                     command_result[:title] = current_title
 
-                                    send_result_embed command_result, event
+                                    @utils.send_from_payload event.channel, command_result
+                                    #send_result_embed command_result, event
 
                                     chunk_start += 2048
                                     chunk_end += 2048
                                     count += 1
                                 end
                             else
-                                send_result_embed command_result, event
+                                @utils.send_from_payload(
+                                    event.channel, command_result
+                                )
                             end
+                        elsif command_result.class == File
+                            send_file(event.channel, command_result)
                         else
-                            self.send_message(event.channel, command_result.to_s)
+                            send_message(event.channel, command_result.to_s)
                         end
                     end
                 end
@@ -212,28 +218,13 @@ module ZapBot
         end
 
         private
-        def send_result_embed with_result, event
-            color = with_result[:color] || with_result[:colour]
-            color = if color.is_a? String then color.to_i(16) else color end
-            color = color.is_a?(Symbol) ? @utils.get_color(color) : color
-            
-            result_embed = Discordrb::Webhooks::Embed.new(
-                title: with_result[:title],
-                description: with_result[:desc] || with_result[:description],
-                color: color,
-                footer: Discordrb::Webhooks::EmbedFooter.new(
-                    text: with_result.dig(:footer, :text),
-                    icon_url: with_result.dig(:footer, :icon_url)
-                ),
-                image: Discordrb::Webhooks::EmbedImage.new(
-                    url: with_result[:image_url]
-                ),
-                thumbnail: Discordrb::Webhooks::EmbedThumbnail.new(
-                    url: with_result[:thumbnail_url]
-                ),
-                timestamp: with_result[:timestamp],
-                url: with_result[:url]
-            )
+
+        def send_result_embed(with_result, event)
+            result_embed = @utils.hash_to_embed with_result
+
+            event.channel.send_file(
+
+            ) if with_result.dig(:file, :position) == :before
 
             event.channel.send_message(
                 with_result[:content] || '',

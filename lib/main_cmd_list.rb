@@ -1,7 +1,6 @@
 require 'active_support/all'
 require_relative 'cmd_list.rb'
 
-
 class ZapBot::MainCommandList
 
     attr_reader :all, :cogs
@@ -11,7 +10,7 @@ class ZapBot::MainCommandList
         @cogs = {}
         @bot = with_bot
     end
-    
+
     def has_command? command_name
         @all.has_command? command_name
     end
@@ -20,7 +19,7 @@ class ZapBot::MainCommandList
         command_list.commands.each do |command|
             command.cog = cog_name
         end
-        
+
         @cogs[cog_name] ||= ZapBot::CommandList.new
         @cogs[cog_name].add command_list.commands
         @all.add command_list.commands
@@ -29,11 +28,12 @@ class ZapBot::MainCommandList
     # TODO: Make this redirect aliases to the help for the command they
     #       are aliasing.
     def help_text_for_command command, context, &block
-        command_name = if command.is_a? String
-            command
-        else
-            command.name
-        end
+        command_name =
+            if command.is_a? String
+                command
+            else
+                command.name
+            end
 
         help_text = nil
 
@@ -73,40 +73,51 @@ class ZapBot::MainCommandList
             )
         end
 
-        unless block.nil?
-            result = block.call help_text
-            return result
-        end
-        
-        return help_text
+        return help_text if block.nil?
+
+        result = yield help_text
     end
 
     CogHelpText = Struct.new :name, :commands
     def command_help_list_by_cogs
         cog_info_text = []
-        @cogs.each do |cog_name, commands|
-            commands_info = []
-            command_list_format = @bot.help_format :list
 
-            commands.commands.each do |command|
-                if command.display_in_help?
-                    command_help = @bot.help_for command
-                    desc = command_help.nil?? nil : command_help.description
-
-                    help_text = @bot.help_format_fill(
-                        command_list_format,
-                        description: desc,
-                        name: command.name
-                    )
-
-                    commands_info.push help_text
-                end
-            end
-
-            cog_info = CogHelpText.new(cog_name, commands_info)
-            cog_info_text.push cog_info
+        @cogs.each do |cog_name, _commands|
+            cog_info_text.push(command_help_list_for_cog cog_name)
         end
 
         return cog_info_text
+    end
+
+    def command_help_list_for_cog(cog_name, &block)
+        found_cog_name = @cogs.keys.find { |name| name.casecmp? cog_name }
+
+        return nil if found_cog_name.nil?
+
+        cog = @cogs[found_cog_name]
+
+        commands_info = []
+        command_list_format = @bot.help_format :list
+
+        cog.commands.each do |command|
+            next unless command.display_in_help?
+
+            command_help = @bot.help_for command
+            desc = command_help.nil? ? nil : command_help.description
+
+            help_text = @bot.help_format_fill(
+                command_list_format,
+                description: desc,
+                name: command.name
+            )
+
+            commands_info.push help_text
+        end
+
+        cog_info = CogHelpText.new(found_cog_name, commands_info)
+
+        return cog_info if block.nil?
+
+        result = yield cog_info
     end
 end

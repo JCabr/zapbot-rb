@@ -19,7 +19,6 @@ module ZapBot::CommandParsing
         text.gsub! /\$USAGE|\$USE/, "help[:usage]"
     end
 
-
     def self.is_float? text
         true if Float(text) rescue false
     end
