@@ -13,6 +13,11 @@ class ZapBot::BotUtils
         @colors = colors.nil? ? {} : colors
     end
 
+    # TODO: Maybe add :middle position option for files that will put the
+    #       file between the message text and the embed.
+    #       This could be accomplished by sending two separate messages
+    #       for the content and the embed, and sending the file message
+    #       between them.
     MessagesFromHash = Struct.new(:file_message, :main_message)
     def send_from_payload(channel, message_hash)
         content = message_hash[:content].nil? ? '' : message_hash[:content]

@@ -15,6 +15,9 @@ require_relative 'menu.rb'
 #       allow multiple command runs, and other special things.
 # TODO: Add Rdoc or something
 
+# TODO: Convert the config files from TOML to YAML
+#       TOML doesn't look much better, and YAML won't need the user to do
+#       a wonky conversion for command names with spaces.
 module ZapBot
     
     class ZapBot < Discordrb::Bot
